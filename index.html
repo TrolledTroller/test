@@ -1,10 +1,45 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>My First Website</title>
+    <title>ChatGPT Integration</title>
 </head>
 <body>
-    <h1>Hello, World!</h1>
-    <p>This is a simple web page.</p>
+    <div id="chat-container">
+        <div id="chat-log"></div>
+        <input id="user-input" type="text" placeholder="Type your message...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+
+    <script>
+        const apiKey = 'YOUR_OPENAI_API_KEY';
+        const chatLog = document.getElementById('chat-log');
+        const userInput = document.getElementById('user-input');
+
+        async function sendMessage() {
+            const userMessage = userInput.value;
+            chatLog.innerHTML += `<div class="user-message">${userMessage}</div>`;
+
+            const response = await getChatGPTResponse(userMessage);
+            chatLog.innerHTML += `<div class="response">${response.choices[0].text.trim()}</div>`;
+
+            userInput.value = '';
+        }
+
+        async function getChatGPTResponse(message) {
+            const response = await fetch('https://api.openai.com/v1/engines/davinci-codex/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}`
+                },
+                body: JSON.stringify({
+                    prompt: message,
+                    max_tokens: 50
+                })
+            });
+
+            return await response.json();
+        }
+    </script>
 </body>
 </html>
